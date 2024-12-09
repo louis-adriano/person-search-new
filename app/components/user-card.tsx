@@ -32,6 +32,10 @@ export function UserCard({ user, onUserUpdate }: UserCardProps) {
     setIsEditMode(true)
   }
 
+  const handleCloseDialog = () => {
+    setIsEditMode(false)
+  }
+
   const handleUserUpdate = (updatedUser: User) => {
     onUserUpdate(updatedUser)
     setIsEditMode(false)
@@ -82,7 +86,7 @@ export function UserCard({ user, onUserUpdate }: UserCardProps) {
       </CardContent>
       <UserDialog
         isOpen={isEditMode}
-        onClose={() => setIsEditMode(false)}
+        onClose={handleCloseDialog}
         onUserUpdate={handleUserUpdate}
         user={user}
       />

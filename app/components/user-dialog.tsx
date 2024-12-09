@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { addUser, editUser } from '@/app/actions/actions'
 import { userFormSchema, User, UserFormData } from '@/app/actions/schemas'
 import { UserForm } from './user-form'
@@ -15,6 +15,10 @@ interface UserDialogProps {
 
 export function UserDialog({ isOpen, onClose, onUserUpdate, user }: UserDialogProps) {
   const [open, setOpen] = useState(isOpen)
+
+  useEffect(() => {
+    setOpen(isOpen)
+  }, [isOpen])
 
   const handleUser = async (data: UserFormData): Promise<ActionState<User>> => {
     try {
@@ -45,7 +49,6 @@ export function UserDialog({ isOpen, onClose, onUserUpdate, user }: UserDialogPr
       formSchema={userFormSchema}
       FormComponent={UserForm}
       action={handleUser}
-      triggerButtonLabel={user ? "Edit User" : "Add User"}
       addDialogTitle={user ? "Edit User" : "Add New User"}
       dialogDescription={user ? "Edit the user information below." : "Fill out the form below to add a new user."}
       submitButtonLabel={user ? "Save Changes" : "Add User"}
