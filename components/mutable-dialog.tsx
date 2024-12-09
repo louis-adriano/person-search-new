@@ -30,7 +30,9 @@ interface GenericDialogProps<T extends FieldValues> {
   editDialogTitle?: string;
   dialogDescription?: string;
   submitButtonLabel?: string;
-  defaultValues?: DefaultValues<T>; // If present, this will indicate edit mode
+  defaultValues?: DefaultValues<T>;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export default function MutableDialog<T extends FieldValues>({
@@ -43,26 +45,25 @@ export default function MutableDialog<T extends FieldValues>({
   editDialogTitle = 'Edit',
   dialogDescription = defaultValues ? 'Make changes to your item here. Click save when you\'re done.' : 'Fill out the form below to add a new item.',
   submitButtonLabel = defaultValues ? 'Save' : 'Add',
+  open: controlledOpen,
+  onOpenChange: controlledOnOpenChange,
 }: GenericDialogProps<T>) {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
+  const onOpenChange = controlledOnOpenChange || setInternalOpen;
 
   const form = useForm<T>({
     resolver: async (values) => {
       try {
-        console.log('Form values before validation:', values); // Log the form values before validation
         const result = formSchema.parse(values);
-        console.log('Validation passed:', result); // Log the result after validation
         return { values: result, errors: {} };
       } catch (err: any) {
-        
-        console.log('Validation errors:', err.formErrors?.fieldErrors); // Log the validation errors
         return { values: {}, errors: err.formErrors?.fieldErrors };
       }
     },
     defaultValues: defaultValues,
   });
 
-  // Reset the form when the dialog is closed
   useEffect(() => {
     if (!open) {
       form.reset();
@@ -74,25 +75,20 @@ export default function MutableDialog<T extends FieldValues>({
       throw new Error("No action function provided");
     }
 
-    console.log('calling submit');
-    const actions = await action(data);  // Call the provided action directly
-
-    console.log('actions:', actions);
+    const actions = await action(data);
 
     if (actions.success) {
-      const toastMessage = actions.message;
-      toast.success(toastMessage);
+      toast.success(actions.message);
     } else {
-      const toastMessage = actions.message;
-      toast.error(toastMessage);
+      toast.error(actions.message);
     }
-    setOpen(false);
+    onOpenChange(false);
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <Button >{triggerButtonLabel}</Button>
+        <Button>{triggerButtonLabel}</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -105,7 +101,7 @@ export default function MutableDialog<T extends FieldValues>({
           <FormComponent form={form} />
           <div className="mt-4">
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setOpen(false)}>Close</Button>
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Close</Button>
               <Button type="submit">{submitButtonLabel}</Button>
             </DialogFooter>
           </div>
@@ -114,3 +110,4 @@ export default function MutableDialog<T extends FieldValues>({
     </Dialog>
   );
 }
+

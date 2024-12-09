@@ -1,4 +1,3 @@
-// app/components/user-form.tsx
 'use client'
 
 import { UseFormReturn } from 'react-hook-form'
@@ -11,8 +10,7 @@ import {
   FormLabel,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { UserFormData } from '../actions/schemas'
-
+import { UserFormData } from '@/app/actions/schemas'
 
 interface FormComponentProps {
   form: UseFormReturn<UserFormData>
@@ -24,63 +22,49 @@ export function UserForm({ form }: FormComponentProps) {
       <FormField
         control={form.control}
         name="name"
-        render={({ field, fieldState }) => (
+        render={({ field }) => (
           <FormItem>
             <FormLabel>Name</FormLabel>
             <FormControl>
-              <Input placeholder="John Doe" {...field} />
+              <Input placeholder="John Doe" {...field} value={field.value || ''} />
             </FormControl>
             <FormDescription>
               Enter full name.
             </FormDescription>
-            {fieldState.error && (
-                            <p className="text-red-600 text-sm mt-1">
-                                {String(fieldState.error) || ''}
-                            </p>
-                        ) }
           </FormItem>
         )}
       />
       <FormField
         control={form.control}
         name="email"
-        render={({ field, fieldState }) => (
+        render={({ field }) => (
           <FormItem>
             <FormLabel>Email</FormLabel>
             <FormControl>
-              <Input type="email" placeholder="john@example.com" {...field} />
+              <Input type="email" placeholder="john@example.com" {...field} value={field.value || ''} />
             </FormControl>
             <FormDescription>
               Enter email address.
             </FormDescription>
-            {fieldState.error && (
-                            <p className="text-red-600 text-sm mt-1">
-                                {String(fieldState.error) || ''}
-                            </p>
-                        ) }
           </FormItem>
         )}
       />
       <FormField
         control={form.control}
         name="phoneNumber"
-        render={({ field, fieldState }) => (
+        render={({ field }) => (
           <FormItem>
             <FormLabel>Phone Number</FormLabel>
             <FormControl>
-              <Input placeholder="123-456-7890" {...field} />
+              <Input placeholder="0412345678" {...field} value={field.value || ''} />
             </FormControl>
             <FormDescription>
-              Enter phone number in Australian phone number format.
+              Enter phone number in Australian mobile number format.
             </FormDescription>
-            {fieldState.error && (
-                            <p className="text-red-600 text-sm mt-1">
-                                {String(fieldState.error) || ''}
-                            </p>
-                        ) }
           </FormItem>
         )}
       />
     </Form>
   )
 }
+
